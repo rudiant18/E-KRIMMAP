@@ -1,0 +1,86 @@
+== CARA PAKAI — SIG KRIMINAL LARAVEL ==
+
+Semua file ini tinggal copy ke project Laravel kamu yang sudah ada.
+Jangan buat project baru!
+
+------------------------------------------------------------
+LANGKAH 1 — Copy file ke project Laravel kamu
+------------------------------------------------------------
+
+Salin setiap file ke lokasi yang sama di project Laravel kamu:
+
+  config/cors.php
+    → salin ke folder: config/
+
+  database/migrations/2024_01_01_000000_create_lokasi_kriminal_table.php
+    → salin ke folder: database/migrations/
+
+  app/Models/LokasiKriminal.php
+    → salin ke folder: app/Models/
+
+  app/Http/Controllers/LokasiKriminalController.php
+    → salin ke folder: app/Http/Controllers/
+
+  routes/api.php
+    → GANTI (overwrite) file routes/api.php yang sudah ada
+
+  database/seeders/LokasiKriminalSeeder.php
+    → salin ke folder: database/seeders/
+
+------------------------------------------------------------
+LANGKAH 2 — Jalankan perintah ini di terminal VS Code
+------------------------------------------------------------
+
+  php artisan config:clear
+  php artisan migrate
+  php artisan db:seed --class=LokasiKriminalSeeder
+  php artisan serve
+
+------------------------------------------------------------
+LANGKAH 3 — Test API di browser
+------------------------------------------------------------
+
+  Buka: http://127.0.0.1:8000/api/lokasi
+
+  Harus muncul 18 data JSON lokasi kriminal.
+  Kalau muncul = BERHASIL!
+
+------------------------------------------------------------
+LANGKAH 4 — Hubungkan ke file HTML kamu
+------------------------------------------------------------
+
+  Buka file sig-kriminal-cepu-kasiman.html
+  Cari baris: var crimes = [...]
+  Ganti seluruh array itu dengan:
+
+  let crimes = [];
+
+  async function loadData() {
+    const res  = await fetch('http://127.0.0.1:8000/api/lokasi');
+    const json = await res.json();
+    crimes = json.map(d => ({
+      id:    d.id,
+      nama:  d.nama,
+      kec:   d.kecamatan,
+      lat:   parseFloat(d.lat),
+      lng:   parseFloat(d.lng),
+      jenis: d.jenis,
+      risiko: d.risiko,
+      ket:   d.keterangan,
+      kasus: {
+        2020: d.kasus_2020,
+        2021: d.kasus_2021,
+        2022: d.kasus_2022,
+        2023: d.kasus_2023,
+        2024: d.kasus_2024,
+      }
+    }));
+    renderMarkers();
+    renderList();
+    renderStats();
+    renderCharts();
+  }
+
+  loadData();
+
+------------------------------------------------------------
